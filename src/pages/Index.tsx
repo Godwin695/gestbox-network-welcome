@@ -1,9 +1,13 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Network, Shield, Settings, Wifi } from "lucide-react";
+import LoginModal from "@/components/LoginModal";
 
 const Index = () => {
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* Header */}
@@ -18,7 +22,10 @@ const Index = () => {
             </div>
             
             {/* Bouton de connexion */}
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button 
+              className="bg-blue-600 hover:bg-blue-700"
+              onClick={() => setIsLoginModalOpen(true)}
+            >
               Connexion
             </Button>
           </div>
@@ -126,6 +133,12 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      {/* Modal de connexion */}
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)} 
+      />
     </div>
   );
 };
