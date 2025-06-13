@@ -22,7 +22,6 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Ici vous pourrez ajouter la logique de connexion/inscription
     console.log("Form submitted:", formData);
     onClose();
   };
@@ -36,10 +35,12 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-gradient-to-br from-slate-800 to-blue-900 border-orange-500/30 text-white">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center text-gray-900">
-            {isSignUp ? "Créer un compte" : "Connexion"}
+          <DialogTitle className="text-2xl font-bold text-center">
+            <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
+              {isSignUp ? "Créer un compte" : "Connexion"}
+            </span>
           </DialogTitle>
         </DialogHeader>
         
@@ -47,11 +48,11 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="name" className="text-sm font-medium text-gray-200">
                   Nom complet
                 </Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-400 h-4 w-4" />
                   <Input
                     id="name"
                     name="name"
@@ -59,7 +60,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                     placeholder="Votre nom complet"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="pl-10"
+                    className="pl-10 bg-slate-700/50 border-orange-500/30 text-white placeholder-gray-400 focus:border-orange-500"
                     required={isSignUp}
                   />
                 </div>
@@ -67,11 +68,11 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
             )}
             
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="email" className="text-sm font-medium text-gray-200">
                 Email
               </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-400 h-4 w-4" />
                 <Input
                   id="email"
                   name="email"
@@ -79,18 +80,18 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                   placeholder="votre@email.com"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="pl-10"
+                  className="pl-10 bg-slate-700/50 border-orange-500/30 text-white placeholder-gray-400 focus:border-orange-500"
                   required
                 />
               </div>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+              <Label htmlFor="password" className="text-sm font-medium text-gray-200">
                 Mot de passe
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-400 h-4 w-4" />
                 <Input
                   id="password"
                   name="password"
@@ -98,30 +99,30 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="pl-10 pr-10"
+                  className="pl-10 pr-10 bg-slate-700/50 border-orange-500/30 text-white placeholder-gray-400 focus:border-orange-500"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-400 hover:text-orange-300"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
             
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3">
+            <Button type="submit" className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white py-3 shadow-lg hover:shadow-xl transition-all duration-300">
               {isSignUp ? "Créer le compte" : "Se connecter"}
             </Button>
           </form>
           
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-300">
               {isSignUp ? "Vous avez déjà un compte ?" : "Vous n'avez pas de compte ?"}
               <button
                 onClick={() => setIsSignUp(!isSignUp)}
-                className="ml-1 text-blue-600 hover:text-blue-700 font-medium"
+                className="ml-1 text-orange-400 hover:text-orange-300 font-medium transition-colors"
               >
                 {isSignUp ? "Se connecter" : "Créer un compte"}
               </button>
@@ -129,7 +130,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
           </div>
           
           <div className="mt-4 text-center">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-400">
               En vous connectant, vous acceptez nos conditions d'utilisation et notre politique de confidentialité.
             </p>
           </div>

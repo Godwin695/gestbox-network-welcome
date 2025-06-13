@@ -9,21 +9,23 @@ const Index = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-gradient-to-r from-slate-900 to-blue-900 shadow-xl border-b border-orange-500/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <div className="flex items-center">
-              <div className="bg-blue-600 text-white px-3 py-2 rounded-lg font-bold text-xl">
-                GESTBOX
-              </div>
+            <div className="flex items-center animate-fade-in">
+              <img 
+                src="/lovable-uploads/6d6959de-2520-47ed-9e21-f90d440b8bd1.png" 
+                alt="GestBox Logo" 
+                className="h-12 w-auto hover:scale-105 transition-transform duration-300"
+              />
             </div>
             
             {/* Bouton de connexion */}
             <Button 
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 animate-fade-in"
               onClick={() => setIsLoginModalOpen(true)}
             >
               Connexion
@@ -32,33 +34,45 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Section principale */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Message de bienvenue */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Bienvenue chez GESTBOX
+      {/* Hero Section avec image illustrative */}
+      <section className="relative bg-gradient-to-r from-slate-900 via-blue-900 to-slate-800 py-20">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div 
+          className="absolute inset-0 opacity-10 bg-cover bg-center"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')`
+          }}
+        ></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-5xl font-bold text-white mb-6 animate-fade-in">
+            Bienvenue chez{" "}
+            <span className="bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
+              GESTBOX
+            </span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto animate-fade-in">
             Votre partenaire de confiance pour tous vos besoins en services réseau. 
             Nous offrons des solutions innovantes et fiables pour optimiser votre infrastructure réseau.
           </p>
         </div>
+      </section>
 
-        {/* Blocs de services */}
+      {/* Section principale */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Blocs de services avec animations */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
           {/* Service 1 */}
-          <Card className="hover:shadow-lg transition-shadow duration-300">
+          <Card className="bg-gradient-to-br from-slate-800/80 to-blue-900/80 border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-500 hover:scale-105 animate-fade-in backdrop-blur-sm group">
             <CardHeader className="text-center">
-              <div className="mx-auto mb-4 p-3 bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center">
-                <Network className="h-8 w-8 text-blue-600" />
+              <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full w-20 h-20 flex items-center justify-center group-hover:from-orange-500 group-hover:to-orange-600 transition-all duration-300">
+                <Network className="h-10 w-10 text-white" />
               </div>
-              <CardTitle className="text-xl font-semibold text-gray-900">
+              <CardTitle className="text-xl font-semibold text-white">
                 Infrastructure Réseau
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-center text-gray-600">
+              <CardDescription className="text-center text-gray-300">
                 Conception, installation et maintenance de votre infrastructure réseau 
                 pour une connectivité optimale et sécurisée.
               </CardDescription>
@@ -66,17 +80,17 @@ const Index = () => {
           </Card>
 
           {/* Service 2 */}
-          <Card className="hover:shadow-lg transition-shadow duration-300">
+          <Card className="bg-gradient-to-br from-slate-800/80 to-blue-900/80 border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-500 hover:scale-105 animate-fade-in backdrop-blur-sm group" style={{animationDelay: '0.2s'}}>
             <CardHeader className="text-center">
-              <div className="mx-auto mb-4 p-3 bg-green-100 rounded-full w-16 h-16 flex items-center justify-center">
-                <Shield className="h-8 w-8 text-green-600" />
+              <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full w-20 h-20 flex items-center justify-center group-hover:from-orange-500 group-hover:to-orange-600 transition-all duration-300">
+                <Shield className="h-10 w-10 text-white" />
               </div>
-              <CardTitle className="text-xl font-semibold text-gray-900">
+              <CardTitle className="text-xl font-semibold text-white">
                 Sécurité Réseau
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-center text-gray-600">
+              <CardDescription className="text-center text-gray-300">
                 Protection avancée de vos données avec des solutions de sécurité 
                 réseau adaptées à vos besoins spécifiques.
               </CardDescription>
@@ -84,17 +98,17 @@ const Index = () => {
           </Card>
 
           {/* Service 3 */}
-          <Card className="hover:shadow-lg transition-shadow duration-300">
+          <Card className="bg-gradient-to-br from-slate-800/80 to-blue-900/80 border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/20 transition-all duration-500 hover:scale-105 animate-fade-in backdrop-blur-sm group" style={{animationDelay: '0.4s'}}>
             <CardHeader className="text-center">
-              <div className="mx-auto mb-4 p-3 bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center">
-                <Settings className="h-8 w-8 text-purple-600" />
+              <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full w-20 h-20 flex items-center justify-center group-hover:from-orange-500 group-hover:to-orange-600 transition-all duration-300">
+                <Settings className="h-10 w-10 text-white" />
               </div>
-              <CardTitle className="text-xl font-semibold text-gray-900">
+              <CardTitle className="text-xl font-semibold text-white">
                 Support & Maintenance
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-center text-gray-600">
+              <CardDescription className="text-center text-gray-300">
                 Assistance technique 24/7 et maintenance préventive pour assurer 
                 la performance continue de votre réseau.
               </CardDescription>
@@ -103,14 +117,16 @@ const Index = () => {
         </div>
 
         {/* Section supplémentaire avec connectivité */}
-        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-          <div className="flex justify-center mb-4">
-            <Wifi className="h-12 w-12 text-blue-600" />
+        <div className="bg-gradient-to-r from-slate-800/80 to-blue-900/80 backdrop-blur-sm rounded-xl shadow-2xl p-8 text-center border border-orange-500/30 animate-fade-in hover:shadow-orange-500/20 transition-all duration-500" style={{animationDelay: '0.6s'}}>
+          <div className="flex justify-center mb-6">
+            <div className="p-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full">
+              <Wifi className="h-12 w-12 text-white" />
+            </div>
           </div>
-          <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+          <h3 className="text-3xl font-semibold text-white mb-6">
             Connectivité Haute Performance
           </h3>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <p className="text-gray-300 max-w-2xl mx-auto text-lg">
             Bénéficiez d'une connectivité stable et rapide grâce à nos solutions réseau 
             de dernière génération. Notre expertise vous garantit une infrastructure 
             fiable et évolutive.
@@ -119,15 +135,17 @@ const Index = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 mt-16">
+      <footer className="bg-gradient-to-r from-slate-900 to-black border-t border-orange-500/20 text-white py-12 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="mb-4">
-              <div className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-lg">
-                GESTBOX
-              </div>
+            <div className="mb-6 animate-fade-in">
+              <img 
+                src="/lovable-uploads/6d6959de-2520-47ed-9e21-f90d440b8bd1.png" 
+                alt="GestBox Logo" 
+                className="h-16 w-auto mx-auto mb-4"
+              />
             </div>
-            <p className="text-gray-400">
+            <p className="text-gray-400 text-lg">
               © 2024 GESTBOX. Tous droits réservés. | Services réseau professionnels
             </p>
           </div>
