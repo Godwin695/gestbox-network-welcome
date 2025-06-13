@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Eye, EyeOff, Lock, Mail, Shield, User } from "lucide-react";
 
@@ -12,204 +13,186 @@ interface LoginModalProps {
 }
 
 const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
-  const [showPasswordAdmin, setShowPasswordAdmin] = useState(false);
-  const [showPasswordUser, setShowPasswordUser] = useState(false);
-  const [adminFormData, setAdminFormData] = useState({
-    email: "",
-    password: ""
-  });
-  const [userFormData, setUserFormData] = useState({
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
 
-  const handleAdminSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Admin login:", adminFormData);
+    console.log(`${isAdmin ? 'Admin' : 'User'} login:`, formData);
     onClose();
   };
 
-  const handleUserSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("User login:", userFormData);
-    onClose();
-  };
-
-  const handleAdminInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAdminFormData({
-      ...adminFormData,
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
       [e.target.name]: e.target.value
     });
   };
 
-  const handleUserInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserFormData({
-      ...userFormData,
-      [e.target.name]: e.target.value
-    });
+  const handleModeSwitch = () => {
+    setIsAdmin(!isAdmin);
+    setFormData({ email: "", password: "" });
+    setShowPassword(false);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl w-full h-[80vh] p-0 border-orange-500/30 bg-gradient-to-br from-slate-900 to-blue-900 overflow-hidden">
-        <div className="flex h-full">
-          {/* Section Admin - Côté gauche */}
-          <div className="flex-1 bg-gradient-to-br from-slate-800 to-blue-900 p-8 flex flex-col justify-center relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-blue-600/20"></div>
-            <div className="relative z-10">
-              <div className="text-center mb-8">
-                <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full w-20 h-20 flex items-center justify-center">
-                  <Shield className="h-10 w-10 text-white" />
-                </div>
-                <h2 className="text-3xl font-bold text-white mb-2">
-                  Connexion
-                  <span className="block bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
-                    Administrateur
-                  </span>
-                </h2>
-                <p className="text-gray-300">Accès réservé aux administrateurs</p>
-              </div>
+      <DialogContent className="max-w-md w-full p-0 border-none bg-transparent overflow-hidden">
+        <div className="relative bg-gradient-to-br from-slate-900 to-blue-900 rounded-2xl shadow-2xl overflow-hidden">
+          {/* Background decoratif */}
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-blue-600/20"></div>
+          
+          {/* Animated background shape */}
+          <div className={`absolute inset-0 transform transition-transform duration-700 ease-in-out ${
+            isAdmin ? 'translate-x-0' : 'translate-x-full'
+          }`}>
+            <div className="w-full h-full bg-gradient-to-br from-orange-500/20 to-orange-600/30 rounded-2xl"></div>
+          </div>
 
-              <form onSubmit={handleAdminSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="admin-email" className="text-sm font-medium text-gray-200">
-                    Email Administrateur
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-400 h-5 w-5" />
-                    <Input
-                      id="admin-email"
-                      name="email"
-                      type="email"
-                      placeholder="admin@gestbox.com"
-                      value={adminFormData.email}
-                      onChange={handleAdminInputChange}
-                      className="pl-12 h-12 bg-slate-700/50 border-orange-500/30 text-white placeholder-gray-400 focus:border-orange-500 focus:ring-orange-500/20"
-                      required
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="admin-password" className="text-sm font-medium text-gray-200">
-                    Mot de passe
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-400 h-5 w-5" />
-                    <Input
-                      id="admin-password"
-                      name="password"
-                      type={showPasswordAdmin ? "text" : "password"}
-                      placeholder="••••••••"
-                      value={adminFormData.password}
-                      onChange={handleAdminInputChange}
-                      className="pl-12 pr-12 h-12 bg-slate-700/50 border-orange-500/30 text-white placeholder-gray-400 focus:border-orange-500 focus:ring-orange-500/20"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPasswordAdmin(!showPasswordAdmin)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-400 hover:text-orange-300"
-                    >
-                      {showPasswordAdmin ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                  </div>
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  Connexion Admin
-                </Button>
-              </form>
+          {/* Header avec switch */}
+          <div className="relative z-10 p-8 text-center">
+            <div className="flex items-center justify-center mb-6">
+              <div className={`p-4 rounded-full transition-all duration-500 ${
+                isAdmin 
+                  ? 'bg-gradient-to-br from-orange-500 to-orange-600' 
+                  : 'bg-gradient-to-br from-blue-500 to-blue-600'
+              }`}>
+                {isAdmin ? (
+                  <Shield className="h-8 w-8 text-white" />
+                ) : (
+                  <User className="h-8 w-8 text-white" />
+                )}
+              </div>
+            </div>
+
+            <h2 className="text-2xl font-bold text-white mb-2 transition-all duration-300">
+              Connexion{" "}
+              <span className={`block transition-all duration-300 ${
+                isAdmin 
+                  ? 'bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent'
+                  : 'bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent'
+              }`}>
+                {isAdmin ? 'Administrateur' : 'Utilisateur'}
+              </span>
+            </h2>
+
+            <p className="text-gray-300 mb-6">
+              {isAdmin ? 'Accès réservé aux administrateurs' : 'Accès client GESTBOX'}
+            </p>
+
+            {/* Switch pour basculer entre Admin et User */}
+            <div className="flex items-center justify-center space-x-4 mb-8">
+              <span className={`text-sm font-medium transition-colors duration-300 ${
+                !isAdmin ? 'text-blue-400' : 'text-gray-400'
+              }`}>
+                Utilisateur
+              </span>
+              <Switch
+                checked={isAdmin}
+                onCheckedChange={handleModeSwitch}
+                className={`transition-colors duration-300 ${
+                  isAdmin 
+                    ? 'data-[state=checked]:bg-orange-500' 
+                    : 'data-[state=checked]:bg-blue-500'
+                }`}
+              />
+              <span className={`text-sm font-medium transition-colors duration-300 ${
+                isAdmin ? 'text-orange-400' : 'text-gray-400'
+              }`}>
+                Admin
+              </span>
             </div>
           </div>
 
-          {/* Séparateur central */}
-          <div className="w-1 bg-gradient-to-b from-orange-500/50 via-orange-400 to-orange-500/50"></div>
-
-          {/* Section Utilisateur - Côté droit */}
-          <div className="flex-1 bg-gradient-to-br from-blue-900 to-slate-800 p-8 flex flex-col justify-center relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-orange-500/10"></div>
-            <div className="relative z-10">
-              <div className="text-center mb-8">
-                <div className="mx-auto mb-4 p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full w-20 h-20 flex items-center justify-center">
-                  <User className="h-10 w-10 text-white" />
+          {/* Formulaire */}
+          <div className="relative z-10 px-8 pb-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium text-gray-200">
+                  {isAdmin ? 'Email Administrateur' : 'Email Client'}
+                </Label>
+                <div className="relative">
+                  <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors duration-300 ${
+                    isAdmin ? 'text-orange-400' : 'text-blue-400'
+                  }`} />
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder={isAdmin ? "admin@gestbox.com" : "client@exemple.com"}
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className={`pl-12 h-12 bg-slate-700/50 text-white placeholder-gray-400 transition-all duration-300 ${
+                      isAdmin 
+                        ? 'border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20' 
+                        : 'border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20'
+                    }`}
+                    required
+                  />
                 </div>
-                <h2 className="text-3xl font-bold text-white mb-2">
-                  Connexion
-                  <span className="block bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
-                    Utilisateur
-                  </span>
-                </h2>
-                <p className="text-gray-300">Accès client GESTBOX</p>
               </div>
-
-              <form onSubmit={handleUserSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="user-email" className="text-sm font-medium text-gray-200">
-                    Email Client
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
-                    <Input
-                      id="user-email"
-                      name="email"
-                      type="email"
-                      placeholder="client@exemple.com"
-                      value={userFormData.email}
-                      onChange={handleUserInputChange}
-                      className="pl-12 h-12 bg-slate-700/50 border-blue-500/30 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
-                      required
-                    />
-                  </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium text-gray-200">
+                  Mot de passe
+                </Label>
+                <div className="relative">
+                  <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors duration-300 ${
+                    isAdmin ? 'text-orange-400' : 'text-blue-400'
+                  }`} />
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className={`pl-12 pr-12 h-12 bg-slate-700/50 text-white placeholder-gray-400 transition-all duration-300 ${
+                      isAdmin 
+                        ? 'border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20' 
+                        : 'border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20'
+                    }`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
+                      isAdmin 
+                        ? 'text-orange-400 hover:text-orange-300' 
+                        : 'text-blue-400 hover:text-blue-300'
+                    }`}
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="user-password" className="text-sm font-medium text-gray-200">
-                    Mot de passe
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
-                    <Input
-                      id="user-password"
-                      name="password"
-                      type={showPasswordUser ? "text" : "password"}
-                      placeholder="••••••••"
-                      value={userFormData.password}
-                      onChange={handleUserInputChange}
-                      className="pl-12 pr-12 h-12 bg-slate-700/50 border-blue-500/30 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPasswordUser(!showPasswordUser)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-400 hover:text-blue-300"
-                    >
-                      {showPasswordUser ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                    </button>
-                  </div>
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  Connexion Client
-                </Button>
-              </form>
-            </div>
+              </div>
+              
+              <Button 
+                type="submit" 
+                className={`w-full h-12 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 ${
+                  isAdmin 
+                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700' 
+                    : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
+                }`}
+              >
+                {isAdmin ? 'Connexion Admin' : 'Connexion Client'}
+              </Button>
+            </form>
           </div>
-        </div>
 
-        {/* Logo GESTBOX en bas au centre */}
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
-          <img 
-            src="/lovable-uploads/6d6959de-2520-47ed-9e21-f90d440b8bd1.png" 
-            alt="GestBox Logo" 
-            className="h-8 w-auto opacity-70"
-          />
+          {/* Logo GESTBOX en bas */}
+          <div className="relative z-10 pb-6 text-center">
+            <img 
+              src="/lovable-uploads/6d6959de-2520-47ed-9e21-f90d440b8bd1.png" 
+              alt="GestBox Logo" 
+              className="h-8 w-auto mx-auto opacity-70"
+            />
+          </div>
         </div>
       </DialogContent>
     </Dialog>
