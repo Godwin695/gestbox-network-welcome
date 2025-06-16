@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Eye, EyeOff, Lock, Mail, Shield, User } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, Shield, User, Phone } from "lucide-react";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -17,7 +17,10 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
+    firstName: "",
+    lastName: "",
+    phone: ""
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -35,7 +38,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
 
   const handleModeSwitch = () => {
     setIsAdmin(!isAdmin);
-    setFormData({ email: "", password: "" });
+    setFormData({ email: "", password: "", firstName: "", lastName: "", phone: "" });
     setShowPassword(false);
   };
 
@@ -110,23 +113,87 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
 
           {/* Formulaire */}
           <div className="relative z-10 px-8 pb-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Champs spécifiques aux clients */}
+              {!isAdmin && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName" className="text-sm font-medium text-gray-200">
+                        Prénom
+                      </Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-400" />
+                        <Input
+                          id="firstName"
+                          name="firstName"
+                          type="text"
+                          placeholder="Prénom"
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          className="pl-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20"
+                          required
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName" className="text-sm font-medium text-gray-200">
+                        Nom
+                      </Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-400" />
+                        <Input
+                          id="lastName"
+                          name="lastName"
+                          type="text"
+                          placeholder="Nom"
+                          value={formData.lastName}
+                          onChange={handleInputChange}
+                          className="pl-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-sm font-medium text-gray-200">
+                      Numéro de téléphone
+                    </Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-400" />
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        placeholder="06 12 34 56 78"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className="pl-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20"
+                        required
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium text-gray-200">
-                  {isAdmin ? 'Email Administrateur' : 'Email Client'}
+                  {isAdmin ? 'Email Administrateur' : 'Email'}
                 </Label>
                 <div className="relative">
-                  <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors duration-300 ${
+                  <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors duration-300 ${
                     isAdmin ? 'text-orange-400' : 'text-blue-400'
                   }`} />
                   <Input
                     id="email"
                     name="email"
                     type="email"
-                    placeholder={isAdmin ? "admin@gestbox.com" : "client@exemple.com"}
+                    placeholder={isAdmin ? "admin@gestbox.com" : "email@exemple.com"}
                     value={formData.email}
                     onChange={handleInputChange}
-                    className={`pl-12 h-12 bg-slate-700/50 text-white placeholder-gray-400 transition-all duration-300 ${
+                    className={`pl-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 transition-all duration-300 ${
                       isAdmin 
                         ? 'border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20' 
                         : 'border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20'
@@ -141,7 +208,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                   Mot de passe
                 </Label>
                 <div className="relative">
-                  <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 transition-colors duration-300 ${
+                  <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors duration-300 ${
                     isAdmin ? 'text-orange-400' : 'text-blue-400'
                   }`} />
                   <Input
@@ -151,7 +218,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className={`pl-12 pr-12 h-12 bg-slate-700/50 text-white placeholder-gray-400 transition-all duration-300 ${
+                    className={`pl-10 pr-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 transition-all duration-300 ${
                       isAdmin 
                         ? 'border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20' 
                         : 'border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20'
@@ -167,14 +234,14 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                         : 'text-blue-400 hover:text-blue-300'
                     }`}
                   >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
               
               <Button 
                 type="submit" 
-                className={`w-full h-12 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 ${
+                className={`w-full h-10 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 ${
                   isAdmin 
                     ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700' 
                     : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700'
