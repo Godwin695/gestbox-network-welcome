@@ -4,28 +4,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Eye, EyeOff, Lock, Mail, Shield, User, Phone } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Eye, EyeOff, Lock, Shield, User, Phone } from "lucide-react";
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onAdminLogin: () => void;
 }
 
-const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
+const LoginModal = ({ isOpen, onClose, onAdminLogin }: LoginModalProps) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
     firstName: "",
     lastName: "",
-    phone: ""
+    phone: "",
+    adminFirstName: "",
+    adminLastName: "",
+    adminPassword: ""
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log(`${isAdmin ? 'Admin' : 'User'} login:`, formData);
+    
+    if (isAdmin) {
+      onAdminLogin();
+    }
+    
     onClose();
   };
 
@@ -38,13 +45,24 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
 
   const handleModeSwitch = () => {
     setIsAdmin(!isAdmin);
-    setFormData({ email: "", password: "", firstName: "", lastName: "", phone: "" });
+    setFormData({ 
+      firstName: "", 
+      lastName: "", 
+      phone: "", 
+      adminFirstName: "", 
+      adminLastName: "", 
+      adminPassword: "" 
+    });
     setShowPassword(false);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md w-full p-0 border-none bg-transparent overflow-hidden">
+        <DialogTitle className="sr-only">
+          {isAdmin ? 'Connexion Administrateur' : 'Connexion Utilisateur'}
+        </DialogTitle>
+        
         <div className="relative bg-gradient-to-br from-slate-900 to-blue-900 rounded-2xl shadow-2xl overflow-hidden">
           {/* Background decoratif */}
           <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-blue-600/20"></div>
@@ -114,7 +132,8 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
           {/* Formulaire */}
           <div className="relative z-10 px-8 pb-8">
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Champs spécifiques aux clients */}
+              
+              {/* Champs pour les clients */}
               {!isAdmin && (
                 <>
                   <div className="grid grid-cols-2 gap-4">
@@ -178,66 +197,76 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                 </>
               )}
 
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-200">
-                  {isAdmin ? 'Email Administrateur' : 'Email'}
-                </Label>
-                <div className="relative">
-                  <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors duration-300 ${
-                    isAdmin ? 'text-orange-400' : 'text-blue-400'
-                  }`} />
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder={isAdmin ? "admin@gestbox.com" : "email@exemple.com"}
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className={`pl-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 transition-all duration-300 ${
-                      isAdmin 
-                        ? 'border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20' 
-                        : 'border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20'
-                    }`}
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-200">
-                  Mot de passe
-                </Label>
-                <div className="relative">
-                  <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors duration-300 ${
-                    isAdmin ? 'text-orange-400' : 'text-blue-400'
-                  }`} />
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className={`pl-10 pr-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 transition-all duration-300 ${
-                      isAdmin 
-                        ? 'border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20' 
-                        : 'border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20'
-                    }`}
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                      isAdmin 
-                        ? 'text-orange-400 hover:text-orange-300' 
-                        : 'text-blue-400 hover:text-blue-300'
-                    }`}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
+              {/* Champs pour les administrateurs */}
+              {isAdmin && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="adminFirstName" className="text-sm font-medium text-gray-200">
+                        Prénom Admin
+                      </Label>
+                      <div className="relative">
+                        <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-orange-400" />
+                        <Input
+                          id="adminFirstName"
+                          name="adminFirstName"
+                          type="text"
+                          placeholder="Prénom"
+                          value={formData.adminFirstName}
+                          onChange={handleInputChange}
+                          className="pl-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20"
+                          required
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="adminLastName" className="text-sm font-medium text-gray-200">
+                        Nom Admin
+                      </Label>
+                      <div className="relative">
+                        <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-orange-400" />
+                        <Input
+                          id="adminLastName"
+                          name="adminLastName"
+                          type="text"
+                          placeholder="Nom"
+                          value={formData.adminLastName}
+                          onChange={handleInputChange}
+                          className="pl-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="adminPassword" className="text-sm font-medium text-gray-200">
+                      Mot de passe Admin
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-orange-400" />
+                      <Input
+                        id="adminPassword"
+                        name="adminPassword"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={formData.adminPassword}
+                        onChange={handleInputChange}
+                        className="pl-10 pr-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-400 hover:text-orange-300 transition-colors duration-300"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
               
               <Button 
                 type="submit" 
