@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Eye, EyeOff, Lock, Mail, Shield, User, Phone } from "lucide-react";
+import { Eye, EyeOff, Lock, Shield, User, Phone } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -16,11 +17,11 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: "",
+    phone: "",
     password: "",
     firstName: "",
     lastName: "",
-    phone: ""
+    countryCode: "+224"
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -36,9 +37,16 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
     });
   };
 
+  const handleCountryCodeChange = (value: string) => {
+    setFormData({
+      ...formData,
+      countryCode: value
+    });
+  };
+
   const handleModeSwitch = () => {
     setIsAdmin(!isAdmin);
-    setFormData({ email: "", password: "", firstName: "", lastName: "", phone: "" });
+    setFormData({ phone: "", password: "", firstName: "", lastName: "", countryCode: "+224" });
     setShowPassword(false);
   };
 
@@ -156,88 +164,77 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                       </div>
                     </div>
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-sm font-medium text-gray-200">
-                      Numéro de téléphone
-                    </Label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-400" />
-                      <Input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        placeholder="06 12 34 56 78"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        className="pl-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20"
-                        required
-                      />
-                    </div>
-                  </div>
                 </>
               )}
 
+              {/* Numéro de téléphone pour les deux modes */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-200">
-                  {isAdmin ? 'Email Administrateur' : 'Email'}
+                <Label htmlFor="phone" className="text-sm font-medium text-gray-200">
+                  Numéro de téléphone
                 </Label>
-                <div className="relative">
-                  <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors duration-300 ${
-                    isAdmin ? 'text-orange-400' : 'text-blue-400'
-                  }`} />
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder={isAdmin ? "admin@gestbox.com" : "email@exemple.com"}
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className={`pl-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 transition-all duration-300 ${
-                      isAdmin 
-                        ? 'border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20' 
-                        : 'border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20'
-                    }`}
-                    required
-                  />
+                <div className="flex gap-2">
+                  {!isAdmin && (
+                    <Select value={formData.countryCode} onValueChange={handleCountryCodeChange}>
+                      <SelectTrigger className={`w-24 h-10 bg-slate-700/50 text-white border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20`}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-700 border-slate-600">
+                        <SelectItem value="+224" className="text-white hover:bg-slate-600">+224</SelectItem>
+                        <SelectItem value="+33" className="text-white hover:bg-slate-600">+33</SelectItem>
+                        <SelectItem value="+1" className="text-white hover:bg-slate-600">+1</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                  <div className="relative flex-1">
+                    <Phone className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors duration-300 ${
+                      isAdmin ? 'text-orange-400' : 'text-blue-400'
+                    }`} />
+                    <Input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder={isAdmin ? "Numéro admin" : "12 34 56 78"}
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className={`pl-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 transition-all duration-300 ${
+                        isAdmin 
+                          ? 'border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20' 
+                          : 'border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20'
+                      }`}
+                      required
+                    />
+                  </div>
                 </div>
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-medium text-gray-200">
-                  Mot de passe
-                </Label>
-                <div className="relative">
-                  <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 transition-colors duration-300 ${
-                    isAdmin ? 'text-orange-400' : 'text-blue-400'
-                  }`} />
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className={`pl-10 pr-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 transition-all duration-300 ${
-                      isAdmin 
-                        ? 'border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20' 
-                        : 'border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20'
-                    }`}
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 transition-colors duration-300 ${
-                      isAdmin 
-                        ? 'text-orange-400 hover:text-orange-300' 
-                        : 'text-blue-400 hover:text-blue-300'
-                    }`}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
+
+              {/* Mot de passe seulement pour admin */}
+              {isAdmin && (
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm font-medium text-gray-200">
+                    Mot de passe
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-orange-400" />
+                    <Input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      className="pl-10 pr-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-400 hover:text-orange-300"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
               
               <Button 
                 type="submit" 
