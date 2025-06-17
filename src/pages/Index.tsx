@@ -4,9 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Network, Shield, Settings, Wifi } from "lucide-react";
 import LoginModal from "@/components/LoginModal";
+import AdminDashboard from "@/components/AdminDashboard";
 
 const Index = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+
+  const handleAdminLogin = () => {
+    setIsAdminLoggedIn(true);
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdminLoggedIn(false);
+  };
+
+  // Si admin connecté, afficher le dashboard
+  if (isAdminLoggedIn) {
+    return <AdminDashboard onLogout={handleAdminLogout} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
@@ -155,7 +170,8 @@ const Index = () => {
       {/* Modal de connexion */}
       <LoginModal 
         isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)} 
+        onClose={() => setIsLoginModalOpen(false)}
+        onAdminLogin={handleAdminLogin}
       />
     </div>
   );

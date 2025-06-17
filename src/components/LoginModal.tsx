@@ -1,19 +1,19 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Eye, EyeOff, Lock, Shield, User, Phone } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onAdminLogin: () => void;
 }
 
-const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
+const LoginModal = ({ isOpen, onClose, onAdminLogin }: LoginModalProps) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -27,6 +27,10 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log(`${isAdmin ? 'Admin' : 'User'} login:`, formData);
+    
+    if (isAdmin) {
+      onAdminLogin();
+    }
     onClose();
   };
 
@@ -53,6 +57,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md w-full p-0 border-none bg-transparent overflow-hidden">
+        <DialogTitle className="sr-only">Connexion {isAdmin ? 'Administrateur' : 'Utilisateur'}</DialogTitle>
         <div className="relative bg-gradient-to-br from-slate-900 to-blue-900 rounded-2xl shadow-2xl overflow-hidden">
           {/* Background decoratif */}
           <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-blue-600/20"></div>
