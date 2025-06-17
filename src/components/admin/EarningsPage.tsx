@@ -1,6 +1,8 @@
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DollarSign, TrendingUp, Calendar, CreditCard, Banknote } from "lucide-react";
 
 interface EarningDetail {
@@ -16,6 +18,8 @@ interface EarningDetail {
 }
 
 const EarningsPage = () => {
+  const [selectedPeriod, setSelectedPeriod] = useState('total');
+
   const earningsData: EarningDetail[] = [
     {
       id: "1",
@@ -74,6 +78,15 @@ const EarningsPage = () => {
     }
   ];
 
+  // Données simulées pour différentes périodes
+  const earningsByPeriod = {
+    journalier: 2000,
+    hebdomadaire: 16000,
+    mensuel: 50000,
+    annuel: 600000,
+    total: 668000
+  };
+
   const totalEarnings = earningsData
     .filter(item => item.status === 'paid')
     .reduce((sum, item) => sum + item.amount, 0);
@@ -88,7 +101,7 @@ const EarningsPage = () => {
 
   const totalTransactions = earningsData.length;
 
-  const formatAmount = (amount: number, currency: string) => {
+  const formatAmount = (amount: number, currency: string = 'GNF') => {
     return `${amount.toLocaleString()} ${currency}`;
   };
 
@@ -110,19 +123,115 @@ const EarningsPage = () => {
     }
   };
 
+  const getPeriodLabel = (period: string) => {
+    switch (period) {
+      case 'journalier': return 'Revenus Journaliers';
+      case 'hebdomadaire': return 'Revenus Hebdomadaires';
+      case 'mensuel': return 'Revenus Mensuels';
+      case 'annuel': return 'Revenus Annuels';
+      case 'total': return 'Revenus Totaux';
+      default: return 'Revenus Totaux';
+    }
+  };
+
   return (
     <div className="space-y-6">
-      {/* Statistiques des revenus */}
+      {/* Sélecteur de période */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-white">Revenus et Gains</h2>
+        <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+          <SelectTrigger className="w-[200px] bg-slate-700 border-slate-600 text-white">
+            <SelectValue placeholder="Sélectionner une période" />
+          </SelectTrigger>
+          <SelectContent className="bg-slate-700 border-slate-600">
+            <SelectItem value="journalier">Journalier</SelectItem>
+            <SelectItem value="hebdomadaire">Hebdomadaire</SelectItem>
+            <SelectItem value="mensuel">Mensuel</SelectItem>
+            <SelectItem value="annuel">Annuel</SelectItem>
+            <SelectItem value="total">Total</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Statistiques des revenus par période */}
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <Card className="bg-gradient-to-br from-slate-800/80 to-blue-900/80 border-orange-500/30">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-300 flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Journalier
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-white">{formatAmount(earningsByPeriod.journalier)}</div>
+            <p className="text-xs text-gray-400">aujourd'hui</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-slate-800/80 to-blue-900/80 border-orange-500/30">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-300 flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Hebdomadaire
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-white">{formatAmount(earningsByPeriod.hebdomadaire)}</div>
+            <p className="text-xs text-gray-400">cette semaine</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-slate-800/80 to-blue-900/80 border-orange-500/30">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-300 flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Mensuel
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-white">{formatAmount(earningsByPeriod.mensuel)}</div>
+            <p className="text-xs text-gray-400">ce mois-ci</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-slate-800/80 to-blue-900/80 border-orange-500/30">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-300 flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Annuel
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-white">{formatAmount(earningsByPeriod.annuel)}</div>
+            <p className="text-xs text-gray-400">cette année</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-slate-800/80 to-green-900/80 border-orange-500/30">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-gray-300 flex items-center gap-2">
+              <DollarSign className="h-4 w-4" />
+              Total
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-green-400">{formatAmount(earningsByPeriod.total)}</div>
+            <p className="text-xs text-gray-400">depuis le début</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Statistiques détaillées */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="bg-gradient-to-br from-slate-800/80 to-blue-900/80 border-orange-500/30">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-gray-300 flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
-              Revenus Totaux
+              {getPeriodLabel(selectedPeriod)}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-400">{formatAmount(totalEarnings, 'GNF')}</div>
+            <div className="text-2xl font-bold text-green-400">{formatAmount(earningsByPeriod[selectedPeriod as keyof typeof earningsByPeriod])}</div>
             <p className="text-xs text-gray-400">paiements confirmés</p>
           </CardContent>
         </Card>
@@ -135,7 +244,7 @@ const EarningsPage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-400">{formatAmount(pendingEarnings, 'GNF')}</div>
+            <div className="text-2xl font-bold text-yellow-400">{formatAmount(pendingEarnings)}</div>
             <p className="text-xs text-gray-400">à confirmer</p>
           </CardContent>
         </Card>
@@ -148,7 +257,7 @@ const EarningsPage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-400">{formatAmount(failedEarnings, 'GNF')}</div>
+            <div className="text-2xl font-bold text-red-400">{formatAmount(failedEarnings)}</div>
             <p className="text-xs text-gray-400">paiements échoués</p>
           </CardContent>
         </Card>
@@ -172,7 +281,7 @@ const EarningsPage = () => {
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <Banknote className="h-5 w-5" />
-            Répartition par Méthode de Paiement
+            Répartition par Méthode de Paiement (en Francs Guinéens)
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -224,7 +333,7 @@ const EarningsPage = () => {
                 <TableHead className="text-gray-300">Appareil</TableHead>
                 <TableHead className="text-gray-300">Téléphone</TableHead>
                 <TableHead className="text-gray-300">Type Abonnement</TableHead>
-                <TableHead className="text-gray-300">Montant</TableHead>
+                <TableHead className="text-gray-300">Montant (GNF)</TableHead>
                 <TableHead className="text-gray-300">Méthode</TableHead>
                 <TableHead className="text-gray-300">Statut</TableHead>
               </TableRow>

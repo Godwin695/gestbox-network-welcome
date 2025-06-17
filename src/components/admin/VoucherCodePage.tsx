@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Ticket, Plus, Eye, Clock, Calendar, Timer } from "lucide-react";
 import { useForm } from "react-hook-form";
 
@@ -16,6 +17,7 @@ interface VoucherCode {
   dateCreation: string;
   heureCreation: string;
   dureeAutorisee: string;
+  dureePersonnalisee: number;
   statut: 'actif' | 'utilise' | 'expire';
 }
 
@@ -27,7 +29,8 @@ const VoucherCodePage = () => {
       type: "heure",
       dateCreation: "17/06/2024",
       heureCreation: "14:30",
-      dureeAutorisee: "1 heure",
+      dureeAutorisee: "2 heures",
+      dureePersonnalisee: 2,
       statut: "actif"
     },
     {
@@ -36,7 +39,8 @@ const VoucherCodePage = () => {
       type: "jour",
       dateCreation: "16/06/2024",
       heureCreation: "09:15",
-      dureeAutorisee: "24 heures",
+      dureeAutorisee: "3 jours",
+      dureePersonnalisee: 3,
       statut: "utilise"
     },
     {
@@ -45,7 +49,8 @@ const VoucherCodePage = () => {
       type: "semaine",
       dateCreation: "15/06/2024",
       heureCreation: "11:45",
-      dureeAutorisee: "7 jours",
+      dureeAutorisee: "2 semaines",
+      dureePersonnalisee: 2,
       statut: "actif"
     }
   ]);
@@ -54,7 +59,12 @@ const VoucherCodePage = () => {
   const [selectedVoucher, setSelectedVoucher] = useState<VoucherCode | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
-  const form = useForm();
+  const form = useForm({
+    defaultValues: {
+      type: '',
+      duree: 1
+    }
+  });
 
   const generateVoucherCode = (type: string) => {
     const prefix = type.toUpperCase().slice(0, 4);
@@ -64,12 +74,12 @@ const VoucherCodePage = () => {
     return `${prefix}-${year}-${randomNum}`;
   };
 
-  const getDureeByType = (type: string) => {
+  const getDureeText = (type: string, duree: number) => {
     switch (type) {
-      case 'heure': return '1 heure';
-      case 'jour': return '24 heures';
-      case 'semaine': return '7 jours';
-      case 'mois': return '30 jours';
+      case 'heure': return `${duree} heure${duree > 1 ? 's' : ''}`;
+      case 'jour': return `${duree} jour${duree > 1 ? 's' : ''}`;
+      case 'semaine': return `${duree} semaine${duree > 1 ? 's' : ''}`;
+      case 'mois': return `${duree} mois`;
       default: return '1 heure';
     }
   };
@@ -82,7 +92,8 @@ const VoucherCodePage = () => {
       type: data.type,
       dateCreation: now.toLocaleDateString('fr-FR'),
       heureCreation: now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-      dureeAutorisee: getDureeByType(data.type),
+      dureeAutorisee: getDureeText(data.type, data.duree),
+      dureePersonnalisee: data.duree,
       statut: 'actif'
     };
 
@@ -255,16 +266,41 @@ const VoucherCodePage = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-slate-700 border-slate-600">
-                        <SelectItem value="heure">Heure (1h)</SelectItem>
-                        <SelectItem value="jour">Jour (24h)</SelectItem>
-                        <SelectItem value="semaine">Semaine (7j)</SelectItem>
-                        <SelectItem value="mois">Mois (30j)</SelectItem>
+                        <SelectItem value="heure">Heure</SelectItem>
+                        <SelectItem value="jour">Jour</SelectItem>
+                        <SelectItem value="semaine">Semaine</SelectItem>
+                        <SelectItem value="mois">Mois</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              
+              <FormField
+                control={form.control}
+                name="duree"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-300">
+                      Durée {form.watch('type') && `(en ${form.watch('type')}${form.watch('duree') > 1 ? 's' : ''})`}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min="1"
+                        max="365"
+                        placeholder="Entrer la durée"
+                        className="bg-slate-700 border-slate-600 text-white"
+                        {...field}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
               <div className="flex justify-end gap-2">
                 <Button
                   type="button"
