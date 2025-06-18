@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LogOut, ArrowLeft } from "lucide-react";
 import VoucherPurchase from "./user/VoucherPurchase";
 import UserConsumptionDashboard from "./user/UserConsumptionDashboard";
@@ -32,24 +31,24 @@ const UserDashboard = ({ onLogout, userInfo }: UserDashboardProps) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
       {/* Header */}
-      <header className="bg-gradient-to-r from-slate-900 to-blue-900 shadow-xl border-b border-blue-500/20">
+      <header className="bg-gradient-to-r from-slate-900 to-blue-900 shadow-2xl border-b border-blue-500/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-4">
+          <div className="flex justify-between items-center h-24">
+            <div className="flex items-center space-x-6">
               <img 
                 src="/lovable-uploads/6d6959de-2520-47ed-9e21-f90d440b8bd1.png" 
                 alt="GestBox Logo" 
-                className="h-20 w-auto"
+                className="h-24 w-auto"
               />
               <div className="flex flex-col">
-                <h1 className="text-3xl font-bold text-black">GestBox</h1>
-                <p className="text-sm text-blue-400">Espace Client</p>
+                <h1 className="text-4xl font-bold text-black">GestBox</h1>
+                <p className="text-sm text-blue-400 font-medium">Espace Client</p>
               </div>
             </div>
             
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-white font-medium">
+                <p className="text-white font-bold text-lg">
                   {userInfo.firstName} {userInfo.lastName}
                 </p>
                 <p className="text-blue-400 text-sm">
@@ -82,13 +81,14 @@ const UserDashboard = ({ onLogout, userInfo }: UserDashboardProps) => {
       </header>
 
       {/* Code Marchand Display */}
-      <div className="bg-gradient-to-r from-blue-900 to-slate-900 py-4 border-b border-blue-500/20">
+      <div className="bg-gradient-to-r from-blue-900 to-slate-900 py-6 border-b border-blue-500/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <p className="text-blue-400 text-sm mb-2">Code Marchand GESTBOX</p>
-            <div className="inline-block bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2 rounded-lg font-bold text-lg tracking-wider">
+            <p className="text-blue-400 text-sm mb-3 font-medium">Code Marchand GESTBOX</p>
+            <div className="inline-block bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-3 rounded-lg font-bold text-xl tracking-wider shadow-lg">
               {merchantCode}
             </div>
+            <p className="text-gray-400 text-xs mt-2">Utilisez ce code pour vos achats de vouchers</p>
           </div>
         </div>
       </div>
