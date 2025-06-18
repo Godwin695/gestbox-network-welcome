@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Eye, Smartphone, Wifi, WifiOff } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Eye, Smartphone, Wifi, WifiOff, Power } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Device {
   id: string;
@@ -16,14 +18,16 @@ interface Device {
   subscriptionEnd: string;
   totalConsumption: string;
   connectionTime: string;
+  isActive: boolean;
 }
 
 const DeviceList = () => {
+  const { toast } = useToast();
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   // Données d'exemple
-  const devices: Device[] = [
+  const [devices, setDevices] = useState<Device[]>([
     {
       id: "1",
       name: "iPhone 14 Pro",
@@ -33,7 +37,8 @@ const DeviceList = () => {
       subscriptionStart: "01/01/2024",
       subscriptionEnd: "01/01/2025",
       totalConsumption: "15.2 GB",
-      connectionTime: "142h 30min"
+      connectionTime: "142h 30min",
+      isActive: true
     },
     {
       id: "2",
@@ -44,7 +49,8 @@ const DeviceList = () => {
       subscriptionStart: "15/02/2024",
       subscriptionEnd: "15/02/2025",
       totalConsumption: "8.7 GB",
-      connectionTime: "89h 15min"
+      connectionTime: "89h 15min",
+      isActive: true
     },
     {
       id: "3",
@@ -55,13 +61,27 @@ const DeviceList = () => {
       subscriptionStart: "10/03/2024",
       subscriptionEnd: "10/03/2025",
       totalConsumption: "45.8 GB",
-      connectionTime: "256h 45min"
+      connectionTime: "256h 45min",
+      isActive: false
     }
-  ];
+  ]);
 
   const handleViewDetails = (device: Device) => {
     setSelectedDevice(device);
     setIsDetailModalOpen(true);
+  };
+
+  const handleToggleDevice = (deviceId: string, isActive: boolean) => {
+    setDevices(devices.map(device => 
+      device.id === deviceId 
+        ? { ...device, isActive: isActive }
+        : device
+    ));
+    
+    toast({
+      title: isActive ? "Appareil activé" : "Appareil désactivé",
+      description: `L'appareil a été ${isActive ? 'activé' : 'désactivé'} avec succès.`,
+    });
   };
 
   return (
@@ -81,6 +101,7 @@ const DeviceList = () => {
                 <TableHead className="text-gray-300">Marque</TableHead>
                 <TableHead className="text-gray-300">Téléphone</TableHead>
                 <TableHead className="text-gray-300">Statut</TableHead>
+                <TableHead className="text-gray-300">État</TableHead>
                 <TableHead className="text-gray-300">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -103,6 +124,19 @@ const DeviceList = () => {
                           <span className="text-red-400">Déconnecté</span>
                         </>
                       )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Power className={`h-4 w-4 ${device.isActive ? 'text-green-400' : 'text-red-400'}`} />
+                      <Switch
+                        checked={device.isActive}
+                        onCheckedChange={(checked) => handleToggleDevice(device.id, checked)}
+                        className="data-[state=checked]:bg-green-600"
+                      />
+                      <span className={`text-sm ${device.isActive ? 'text-green-400' : 'text-red-400'}`}>
+                        {device.isActive ? 'Actif' : 'Inactif'}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -168,6 +202,16 @@ const DeviceList = () => {
                 <div>
                   <label className="text-sm font-medium text-gray-300">Temps de connexion</label>
                   <p className="text-white">{selectedDevice.connectionTime}</p>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-300">État de l'appareil</label>
+                <div className="flex items-center gap-2 mt-1">
+                  <Power className={`h-4 w-4 ${selectedDevice.isActive ? 'text-green-400' : 'text-red-400'}`} />
+                  <span className={selectedDevice.isActive ? 'text-green-400' : 'text-red-400'}>
+                    {selectedDevice.isActive ? 'Actif' : 'Inactif'}
+                  </span>
                 </div>
               </div>
             </div>
