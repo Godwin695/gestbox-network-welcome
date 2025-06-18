@@ -30,6 +30,20 @@ const LoginModal = ({ isOpen, onClose, onAdminLogin }: LoginModalProps) => {
     
     if (isAdmin) {
       onAdminLogin();
+    } else {
+      // Validation simple pour les utilisateurs
+      if (formData.firstName && formData.lastName && formData.phone) {
+        // Créer un événement personnalisé pour passer les données utilisateur
+        const userLoginEvent = new CustomEvent('userLogin', {
+          detail: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            phone: formData.phone,
+            countryCode: formData.countryCode
+          }
+        });
+        window.dispatchEvent(userLoginEvent);
+      }
     }
     onClose();
   };

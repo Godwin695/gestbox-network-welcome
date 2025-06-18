@@ -1,14 +1,34 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Network, Shield, Settings, Wifi } from "lucide-react";
 import LoginModal from "@/components/LoginModal";
 import AdminDashboard from "@/components/AdminDashboard";
+import UserDashboard from "@/components/UserDashboard";
 
 const Index = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState<{
+    firstName: string;
+    lastName: string;
+    phone: string;
+    countryCode: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const handleUserLogin = (event: CustomEvent) => {
+      setUserInfo(event.detail);
+      setIsUserLoggedIn(true);
+    };
+
+    window.addEventListener('userLogin', handleUserLogin as EventListener);
+    
+    return () => {
+      window.removeEventListener('userLogin', handleUserLogin as EventListener);
+    };
+  }, []);
 
   const handleAdminLogin = () => {
     setIsAdminLoggedIn(true);
@@ -18,9 +38,19 @@ const Index = () => {
     setIsAdminLoggedIn(false);
   };
 
-  // Si admin connecté, afficher le dashboard
+  const handleUserLogout = () => {
+    setIsUserLoggedIn(false);
+    setUserInfo(null);
+  };
+
+  // Si admin connecté, afficher le dashboard admin
   if (isAdminLoggedIn) {
     return <AdminDashboard onLogout={handleAdminLogout} />;
+  }
+
+  // Si utilisateur connecté, afficher le dashboard utilisateur
+  if (isUserLoggedIn && userInfo) {
+    return <UserDashboard onLogout={handleUserLogout} userInfo={userInfo} />;
   }
 
   return (
