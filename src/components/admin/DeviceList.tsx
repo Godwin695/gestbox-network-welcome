@@ -50,7 +50,7 @@ const DeviceList = () => {
       subscriptionEnd: "15/02/2025",
       totalConsumption: "8.7 GB",
       connectionTime: "89h 15min",
-      isActive: true
+      isActive: false
     },
     {
       id: "3",
@@ -62,7 +62,7 @@ const DeviceList = () => {
       subscriptionEnd: "10/03/2025",
       totalConsumption: "45.8 GB",
       connectionTime: "256h 45min",
-      isActive: false
+      isActive: true
     }
   ]);
 
@@ -74,7 +74,12 @@ const DeviceList = () => {
   const handleToggleDevice = (deviceId: string, isActive: boolean) => {
     setDevices(devices.map(device => 
       device.id === deviceId 
-        ? { ...device, isActive: isActive }
+        ? { 
+            ...device, 
+            isActive: isActive,
+            // Si l'appareil est désactivé, forcer le statut à déconnecté
+            status: isActive ? device.status : 'disconnected'
+          }
         : device
     ));
     
@@ -82,6 +87,14 @@ const DeviceList = () => {
       title: isActive ? "Appareil activé" : "Appareil désactivé",
       description: `L'appareil a été ${isActive ? 'activé' : 'désactivé'} avec succès.`,
     });
+  };
+
+  // Fonction pour obtenir le statut d'affichage (si désactivé, afficher déconnecté)
+  const getDisplayStatus = (device: Device) => {
+    if (!device.isActive) {
+      return 'disconnected';
+    }
+    return device.status;
   };
 
   return (
@@ -106,52 +119,55 @@ const DeviceList = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {devices.map((device) => (
-                <TableRow key={device.id} className="border-slate-700">
-                  <TableCell className="text-white font-medium">{device.name}</TableCell>
-                  <TableCell className="text-gray-300">{device.brand}</TableCell>
-                  <TableCell className="text-gray-300">{device.phone}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {device.status === 'connected' ? (
-                        <>
-                          <Wifi className="h-4 w-4 text-green-400" />
-                          <span className="text-green-400">Connecté</span>
-                        </>
-                      ) : (
-                        <>
-                          <WifiOff className="h-4 w-4 text-red-400" />
-                          <span className="text-red-400">Déconnecté</span>
-                        </>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Power className={`h-4 w-4 ${device.isActive ? 'text-green-400' : 'text-red-400'}`} />
-                      <Switch
-                        checked={device.isActive}
-                        onCheckedChange={(checked) => handleToggleDevice(device.id, checked)}
-                        className="data-[state=checked]:bg-green-600"
-                      />
-                      <span className={`text-sm ${device.isActive ? 'text-green-400' : 'text-red-400'}`}>
-                        {device.isActive ? 'Actif' : 'Inactif'}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleViewDetails(device)}
-                      className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      Détails
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {devices.map((device) => {
+                const displayStatus = getDisplayStatus(device);
+                return (
+                  <TableRow key={device.id} className="border-slate-700">
+                    <TableCell className="text-white font-medium">{device.name}</TableCell>
+                    <TableCell className="text-gray-300">{device.brand}</TableCell>
+                    <TableCell className="text-gray-300">{device.phone}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {displayStatus === 'connected' ? (
+                          <>
+                            <Wifi className="h-4 w-4 text-green-400" />
+                            <span className="text-green-400">Connecté</span>
+                          </>
+                        ) : (
+                          <>
+                            <WifiOff className="h-4 w-4 text-red-400" />
+                            <span className="text-red-400">Déconnecté</span>
+                          </>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Power className={`h-4 w-4 ${device.isActive ? 'text-green-400' : 'text-red-400'}`} />
+                        <Switch
+                          checked={device.isActive}
+                          onCheckedChange={(checked) => handleToggleDevice(device.id, checked)}
+                          className="data-[state=checked]:bg-green-600"
+                        />
+                        <span className={`text-sm ${device.isActive ? 'text-green-400' : 'text-red-400'}`}>
+                          {device.isActive ? 'Actif' : 'Inactif'}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleViewDetails(device)}
+                        className="border-orange-500/30 text-orange-400 hover:bg-orange-500/10"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Détails
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>

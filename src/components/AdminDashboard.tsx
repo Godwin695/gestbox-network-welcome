@@ -50,18 +50,21 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
         {/* Header avec bouton retour */}
         <header className="bg-gradient-to-r from-slate-900 to-blue-900 shadow-xl border-b border-orange-500/20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center">
+            <div className="flex justify-between items-center h-20">
+              <div className="flex items-center space-x-4">
                 <img 
                   src="/lovable-uploads/6d6959de-2520-47ed-9e21-f90d440b8bd1.png" 
                   alt="GestBox Logo" 
-                  className="h-12 w-auto"
+                  className="h-16 w-auto"
                 />
-                <h1 className="ml-4 text-xl font-bold text-white">
-                  {selectedView === 'total-devices' && 'Total Appareils'}
-                  {selectedView === 'total-consumption' && 'Total Consommation'}
-                  {selectedView === 'earnings' && 'Montant Gagné'}
-                </h1>
+                <div className="flex flex-col">
+                  <h1 className="text-2xl font-bold text-white">GestBox</h1>
+                  <p className="text-sm text-orange-400">
+                    {selectedView === 'total-devices' && 'Total Appareils'}
+                    {selectedView === 'total-consumption' && 'Total Consommation'}
+                    {selectedView === 'earnings' && 'Montant Gagné'}
+                  </p>
+                </div>
               </div>
               
               <div className="flex items-center gap-4">
@@ -173,14 +176,17 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800">
         <Sidebar className="border-orange-500/20">
-          <SidebarHeader className="p-4">
-            <div className="flex items-center gap-3">
+          <SidebarHeader className="p-6 border-b border-orange-500/20">
+            <div className="flex items-center space-x-4">
               <img 
                 src="/lovable-uploads/6d6959de-2520-47ed-9e21-f90d440b8bd1.png" 
                 alt="GestBox Logo" 
-                className="h-8 w-auto"
+                className="h-12 w-auto"
               />
-              <span className="text-white font-bold text-lg">GestBox Admin</span>
+              <div className="flex flex-col">
+                <span className="text-white font-bold text-xl">GestBox</span>
+                <span className="text-orange-400 text-sm">Administration</span>
+              </div>
             </div>
           </SidebarHeader>
 
@@ -224,9 +230,12 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
           <header className="bg-gradient-to-r from-slate-900 to-blue-900 shadow-xl border-b border-orange-500/20 p-4">
             <div className="flex items-center gap-4">
               <SidebarTrigger className="text-white hover:bg-orange-500/20" />
-              <h1 className="text-xl font-bold text-white">
-                Tableau de Bord Administrateur
-              </h1>
+              <div className="flex items-center space-x-4">
+                <h1 className="text-xl font-bold text-white">
+                  Tableau de Bord Administrateur
+                </h1>
+                <span className="text-orange-400 text-sm">- GestBox</span>
+              </div>
             </div>
           </header>
 

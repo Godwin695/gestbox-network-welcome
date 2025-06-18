@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 interface AdminAccount {
   id: string;
   username: string;
-  email: string;
+  phone: string;
   role: string;
   createdAt: string;
   lastLogin: string;
@@ -25,11 +25,14 @@ const AdminAccountsPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState<AdminAccount | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
-    email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
     role: 'admin'
   });
 
@@ -37,7 +40,7 @@ const AdminAccountsPage = () => {
     {
       id: "1",
       username: "admin_principal",
-      email: "admin@gestbox.com",
+      phone: "+224 123 456 789",
       role: "Super Admin",
       createdAt: "01/01/2024",
       lastLogin: "Aujourd'hui à 14:30",
@@ -46,7 +49,7 @@ const AdminAccountsPage = () => {
     {
       id: "2",
       username: "admin_support",
-      email: "support@gestbox.com",
+      phone: "+224 987 654 321",
       role: "Admin",
       createdAt: "15/01/2024",
       lastLogin: "Hier à 16:45",
@@ -67,7 +70,7 @@ const AdminAccountsPage = () => {
     const newAdmin: AdminAccount = {
       id: Date.now().toString(),
       username: formData.username,
-      email: formData.email,
+      phone: formData.phone,
       role: formData.role,
       createdAt: new Date().toLocaleDateString('fr-FR'),
       lastLogin: "Jamais",
@@ -76,7 +79,7 @@ const AdminAccountsPage = () => {
 
     setAdminAccounts([...adminAccounts, newAdmin]);
     setIsCreateModalOpen(false);
-    setFormData({ username: '', email: '', password: '', confirmPassword: '', role: 'admin' });
+    setFormData({ username: '', phone: '', password: '', confirmPassword: '', newPassword: '', confirmNewPassword: '', role: 'admin' });
     
     toast({
       title: "Compte créé",
@@ -87,16 +90,26 @@ const AdminAccountsPage = () => {
   const handleEditAdmin = () => {
     if (!selectedAdmin) return;
 
+    // Vérifier si un nouveau mot de passe est fourni et s'il correspond
+    if (formData.newPassword && formData.newPassword !== formData.confirmNewPassword) {
+      toast({
+        title: "Erreur",
+        description: "Les nouveaux mots de passe ne correspondent pas.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const updatedAccounts = adminAccounts.map(admin =>
       admin.id === selectedAdmin.id
-        ? { ...admin, username: formData.username, email: formData.email, role: formData.role }
+        ? { ...admin, username: formData.username, phone: formData.phone, role: formData.role }
         : admin
     );
 
     setAdminAccounts(updatedAccounts);
     setIsEditModalOpen(false);
     setSelectedAdmin(null);
-    setFormData({ username: '', email: '', password: '', confirmPassword: '', role: 'admin' });
+    setFormData({ username: '', phone: '', password: '', confirmPassword: '', newPassword: '', confirmNewPassword: '', role: 'admin' });
     
     toast({
       title: "Compte modifié",
@@ -116,9 +129,11 @@ const AdminAccountsPage = () => {
     setSelectedAdmin(admin);
     setFormData({
       username: admin.username,
-      email: admin.email,
+      phone: admin.phone,
       password: '',
       confirmPassword: '',
+      newPassword: '',
+      confirmNewPassword: '',
       role: admin.role
     });
     setIsEditModalOpen(true);
@@ -154,12 +169,13 @@ const AdminAccountsPage = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-300">Email</Label>
+                  <Label htmlFor="phone" className="text-gray-300">Numéro de téléphone</Label>
                   <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    id="phone"
+                    type="tel"
+                    placeholder="+224 XXX XXX XXX"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="bg-slate-700/50 text-white border-blue-500/30"
                   />
                 </div>
@@ -226,7 +242,7 @@ const AdminAccountsPage = () => {
             <TableHeader>
               <TableRow className="border-slate-700">
                 <TableHead className="text-gray-300">Nom d'utilisateur</TableHead>
-                <TableHead className="text-gray-300">Email</TableHead>
+                <TableHead className="text-gray-300">Téléphone</TableHead>
                 <TableHead className="text-gray-300">Rôle</TableHead>
                 <TableHead className="text-gray-300">Créé le</TableHead>
                 <TableHead className="text-gray-300">Dernière connexion</TableHead>
@@ -238,7 +254,7 @@ const AdminAccountsPage = () => {
               {adminAccounts.map((admin) => (
                 <TableRow key={admin.id} className="border-slate-700">
                   <TableCell className="text-white font-medium">{admin.username}</TableCell>
-                  <TableCell className="text-gray-300">{admin.email}</TableCell>
+                  <TableCell className="text-gray-300">{admin.phone}</TableCell>
                   <TableCell className="text-gray-300">{admin.role}</TableCell>
                   <TableCell className="text-gray-300">{admin.createdAt}</TableCell>
                   <TableCell className="text-gray-300">{admin.lastLogin}</TableCell>
@@ -280,7 +296,7 @@ const AdminAccountsPage = () => {
 
       {/* Modal de modification */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="bg-gradient-to-br from-slate-800 to-blue-900 border-orange-500/30 text-white">
+        <DialogContent className="bg-gradient-to-br from-slate-800 to-blue-900 border-orange-500/30 text-white max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-orange-400">Modifier le compte administrateur</DialogTitle>
           </DialogHeader>
@@ -295,12 +311,13 @@ const AdminAccountsPage = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-email" className="text-gray-300">Email</Label>
+              <Label htmlFor="edit-phone" className="text-gray-300">Numéro de téléphone</Label>
               <Input
-                id="edit-email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                id="edit-phone"
+                type="tel"
+                placeholder="+224 XXX XXX XXX"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 className="bg-slate-700/50 text-white border-blue-500/30"
               />
             </div>
@@ -317,6 +334,51 @@ const AdminAccountsPage = () => {
                 <option value="moderator">Modérateur</option>
               </select>
             </div>
+            
+            {/* Section pour changer le mot de passe */}
+            <div className="border-t border-slate-600 pt-4">
+              <h4 className="text-sm font-medium text-gray-300 mb-3">Changer le mot de passe (optionnel)</h4>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-new-password" className="text-gray-300">Nouveau mot de passe</Label>
+                  <div className="relative">
+                    <Input
+                      id="edit-new-password"
+                      type={showNewPassword ? "text" : "password"}
+                      value={formData.newPassword}
+                      onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
+                      className="bg-slate-700/50 text-white border-blue-500/30 pr-10"
+                      placeholder="Laisser vide pour ne pas changer"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                    >
+                      {showNewPassword ? (
+                        <EyeOff className="h-4 w-4 text-gray-400" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-gray-400" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-confirm-new-password" className="text-gray-300">Confirmer nouveau mot de passe</Label>
+                  <Input
+                    id="edit-confirm-new-password"
+                    type={showNewPassword ? "text" : "password"}
+                    value={formData.confirmNewPassword}
+                    onChange={(e) => setFormData({ ...formData, confirmNewPassword: e.target.value })}
+                    className="bg-slate-700/50 text-white border-blue-500/30"
+                    placeholder="Confirmer le nouveau mot de passe"
+                  />
+                </div>
+              </div>
+            </div>
+            
             <Button
               onClick={handleEditAdmin}
               className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
