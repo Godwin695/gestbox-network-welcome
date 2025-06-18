@@ -1,8 +1,7 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LogOut, Monitor, Activity, Users, Settings, Ticket, Smartphone, TrendingUp, DollarSign, LayoutDashboard } from "lucide-react";
+import { LogOut, Monitor, Activity, Users, Settings, Ticket, Smartphone, TrendingUp, DollarSign, LayoutDashboard, UserCheck } from "lucide-react";
 import { 
   Sidebar, 
   SidebarContent, 
@@ -55,10 +54,10 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
                 <img 
                   src="/lovable-uploads/6d6959de-2520-47ed-9e21-f90d440b8bd1.png" 
                   alt="GestBox Logo" 
-                  className="h-16 w-auto"
+                  className="h-20 w-auto"
                 />
                 <div className="flex flex-col">
-                  <h1 className="text-2xl font-bold text-white">GestBox</h1>
+                  <h1 className="text-3xl font-bold text-black">GestBox</h1>
                   <p className="text-sm text-orange-400">
                     {selectedView === 'total-devices' && 'Total Appareils'}
                     {selectedView === 'total-consumption' && 'Total Consommation'}
@@ -181,10 +180,10 @@ const AdminDashboard = ({ onLogout }: AdminDashboardProps) => {
               <img 
                 src="/lovable-uploads/6d6959de-2520-47ed-9e21-f90d440b8bd1.png" 
                 alt="GestBox Logo" 
-                className="h-12 w-auto"
+                className="h-16 w-auto"
               />
               <div className="flex flex-col">
-                <span className="text-white font-bold text-xl">GestBox</span>
+                <span className="text-black font-bold text-2xl">GestBox</span>
                 <span className="text-orange-400 text-sm">Administration</span>
               </div>
             </div>

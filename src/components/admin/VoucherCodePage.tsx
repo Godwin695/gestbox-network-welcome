@@ -15,6 +15,7 @@ interface VoucherCode {
   type: string;
   duration: string;
   phoneNumber: string;
+  price: string;
   createdAt: string;
   expiresAt: string;
   isUsed: boolean;
@@ -29,8 +30,17 @@ const VoucherCodePage = () => {
     type: 'hours',
     duration: '1',
     phoneNumber: '',
-    expirationDays: '30'
+    price: '1000'
   });
+
+  // Tarifs par défaut selon le type
+  const defaultPrices = {
+    hours: '1000', // 1000 FG par heure
+    days: '5000',  // 5000 FG par jour
+    weeks: '30000', // 30000 FG par semaine
+    months: '90000', // 90000 FG par mois
+    unlimited: '0'
+  };
 
   const [voucherCodes, setVoucherCodes] = useState<VoucherCode[]>([
     {
@@ -39,16 +49,18 @@ const VoucherCodePage = () => {
       type: "Heures",
       duration: "24h",
       phoneNumber: "+224 123 456 789",
+      price: "24000 FG",
       createdAt: "01/01/2024",
       expiresAt: "31/01/2024",
       isUsed: false
     },
     {
       id: "2",
-      code: "DATA5GB-XYZ789",
-      type: "Data",
-      duration: "5 GB",
+      code: "WEEKS1-XYZ789",
+      type: "Semaine",
+      duration: "1 semaine",
       phoneNumber: "+224 987 654 321",
+      price: "30000 FG",
       createdAt: "02/01/2024",
       expiresAt: "01/02/2024",
       isUsed: true,
@@ -58,10 +70,62 @@ const VoucherCodePage = () => {
 
   const generateVoucherCode = () => {
     const prefix = formData.type === 'hours' ? 'HOUR' : 
-                   formData.type === 'data' ? 'DATA' : 
+                   formData.type === 'months' ? 'MONTH' : 
+                   formData.type === 'weeks' ? 'WEEK' :
                    formData.type === 'days' ? 'DAYS' : 'UNLIM';
     const random = Math.random().toString(36).substring(2, 8).toUpperCase();
     return `${prefix}${formData.duration}-${random}`;
+  };
+
+  const calculateExpirationDate = (type: string, duration: string) => {
+    const now = new Date();
+    let expirationDate = new Date(now);
+
+    switch (type) {
+      case 'hours':
+        expirationDate.setDate(now.getDate() + 30); // 30 jours pour les heures
+        break;
+      case 'days':
+        expirationDate.setDate(now.getDate() + 60); // 60 jours pour les jours
+        break;
+      case 'weeks':
+        expirationDate.setDate(now.getDate() + 90); // 90 jours pour les semaines
+        break;
+      case 'months':
+        expirationDate.setDate(now.getDate() + 365); // 1 an pour les mois
+        break;
+      case 'unlimited':
+        expirationDate.setDate(now.getDate() + 365); // 1 an pour illimité
+        break;
+      default:
+        expirationDate.setDate(now.getDate() + 30);
+    }
+
+    return expirationDate.toLocaleDateString('fr-FR');
+  };
+
+  const calculatePrice = (type: string, duration: string) => {
+    const basePrice = parseInt(defaultPrices[type as keyof typeof defaultPrices]);
+    const durationNum = parseInt(duration);
+    return (basePrice * durationNum).toString();
+  };
+
+  const handleTypeChange = (newType: string) => {
+    const newPrice = newType === 'unlimited' ? '0' : calculatePrice(newType, formData.duration);
+    setFormData({
+      ...formData,
+      type: newType,
+      price: newPrice
+    });
+  };
+
+  const handleDurationChange = (newDuration: string) => {
+    const newPrice = formData.type === 'unlimited' ? '0' : calculatePrice(formData.type, newDuration);
+    setFormData({
+      ...formData,
+      duration: newDuration,
+      price: newPrice
+    });
   };
 
   const handleCreateVoucher = () => {
@@ -78,20 +142,23 @@ const VoucherCodePage = () => {
       id: Date.now().toString(),
       code: generateVoucherCode(),
       type: formData.type === 'hours' ? 'Heures' : 
-            formData.type === 'data' ? 'Data' : 
+            formData.type === 'months' ? 'Mois' : 
+            formData.type === 'weeks' ? 'Semaine' :
             formData.type === 'days' ? 'Jours' : 'Illimité',
       duration: formData.type === 'hours' ? `${formData.duration}h` :
-                formData.type === 'data' ? `${formData.duration} GB` :
-                formData.type === 'days' ? `${formData.duration} jours` : 'Illimité',
+                formData.type === 'months' ? `${formData.duration} mois` :
+                formData.type === 'weeks' ? `${formData.duration} semaine${parseInt(formData.duration) > 1 ? 's' : ''}` :
+                formData.type === 'days' ? `${formData.duration} jour${parseInt(formData.duration) > 1 ? 's' : ''}` : 'Illimité',
       phoneNumber: formData.phoneNumber,
+      price: `${formData.price} FG`,
       createdAt: new Date().toLocaleDateString('fr-FR'),
-      expiresAt: new Date(Date.now() + parseInt(formData.expirationDays) * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR'),
+      expiresAt: calculateExpirationDate(formData.type, formData.duration),
       isUsed: false
     };
 
     setVoucherCodes([newVoucher, ...voucherCodes]);
     setIsCreateModalOpen(false);
-    setFormData({ type: 'hours', duration: '1', phoneNumber: '', expirationDays: '30' });
+    setFormData({ type: 'hours', duration: '1', phoneNumber: '', price: '1000' });
     
     toast({
       title: "Code voucher créé",
@@ -121,8 +188,10 @@ const VoucherCodePage = () => {
     switch (type) {
       case 'hours':
         return 'Nombre d\'heures';
-      case 'data':
-        return 'Quantité de data (GB)';
+      case 'months':
+        return 'Nombre de mois';
+      case 'weeks':
+        return 'Nombre de semaines';
       case 'days':
         return 'Nombre de jours';
       case 'unlimited':
@@ -173,12 +242,13 @@ const VoucherCodePage = () => {
                   <select
                     id="type"
                     value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    onChange={(e) => handleTypeChange(e.target.value)}
                     className="w-full h-10 px-3 py-2 bg-slate-700/50 text-white border border-blue-500/30 rounded-md"
                   >
                     <option value="hours">Heures</option>
-                    <option value="data">Data (GB)</option>
                     <option value="days">Jours</option>
+                    <option value="weeks">Semaine</option>
+                    <option value="months">Mois</option>
                     <option value="unlimited">Illimité</option>
                   </select>
                 </div>
@@ -193,22 +263,26 @@ const VoucherCodePage = () => {
                       type="number"
                       min="1"
                       value={formData.duration}
-                      onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                      onChange={(e) => handleDurationChange(e.target.value)}
                       className="bg-slate-700/50 text-white border-blue-500/30"
                     />
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="expirationDays" className="text-gray-300">Expire dans (jours)</Label>
+                  <Label htmlFor="price" className="text-gray-300">Prix (FG)</Label>
                   <Input
-                    id="expirationDays"
+                    id="price"
                     type="number"
-                    min="1"
-                    value={formData.expirationDays}
-                    onChange={(e) => setFormData({ ...formData, expirationDays: e.target.value })}
+                    min="0"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     className="bg-slate-700/50 text-white border-blue-500/30"
+                    disabled={formData.type === 'unlimited'}
                   />
+                  <p className="text-xs text-gray-400">
+                    Prix calculé automatiquement selon le type et la durée
+                  </p>
                 </div>
 
                 <Button
@@ -228,6 +302,7 @@ const VoucherCodePage = () => {
                 <TableHead className="text-gray-300">Code</TableHead>
                 <TableHead className="text-gray-300">Type</TableHead>
                 <TableHead className="text-gray-300">Durée</TableHead>
+                <TableHead className="text-gray-300">Prix</TableHead>
                 <TableHead className="text-gray-300">Téléphone</TableHead>
                 <TableHead className="text-gray-300">Créé le</TableHead>
                 <TableHead className="text-gray-300">Expire le</TableHead>
@@ -241,6 +316,7 @@ const VoucherCodePage = () => {
                   <TableCell className="text-white font-mono font-medium">{voucher.code}</TableCell>
                   <TableCell className="text-gray-300">{voucher.type}</TableCell>
                   <TableCell className="text-gray-300">{voucher.duration}</TableCell>
+                  <TableCell className="text-green-400 font-medium">{voucher.price}</TableCell>
                   <TableCell className="text-gray-300">{voucher.phoneNumber}</TableCell>
                   <TableCell className="text-gray-300">{voucher.createdAt}</TableCell>
                   <TableCell className="text-gray-300">{voucher.expiresAt}</TableCell>
