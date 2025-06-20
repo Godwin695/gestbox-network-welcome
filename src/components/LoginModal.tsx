@@ -1,11 +1,13 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Eye, EyeOff, Lock, Shield, User, Phone } from "lucide-react";
+import { Eye, EyeOff, Lock, Shield, User, Phone, AlertCircle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { validateAdminPhone, validateAdminPassword, getPhoneValidationMessage, getPasswordValidationMessage } from "@/utils/adminValidation";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -23,17 +25,37 @@ const LoginModal = ({ isOpen, onClose, onAdminLogin }: LoginModalProps) => {
     lastName: "",
     countryCode: "+224"
   });
+  const [validationErrors, setValidationErrors] = useState({
+    phone: "",
+    password: ""
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(`${isAdmin ? 'Admin' : 'User'} login:`, formData);
     
     if (isAdmin) {
-      onAdminLogin();
+      // Validation pour administrateur
+      const phoneValid = validateAdminPhone(formData.phone);
+      const passwordValid = validateAdminPassword(formData.password);
+      
+      const errors = {
+        phone: phoneValid ? "" : getPhoneValidationMessage(formData.phone),
+        password: passwordValid ? "" : getPasswordValidationMessage(formData.password)
+      };
+      
+      setValidationErrors(errors);
+      
+      if (phoneValid && passwordValid) {
+        console.log('Admin login successful:', formData);
+        onAdminLogin();
+        onClose();
+      } else {
+        console.log('Admin login failed - validation errors:', errors);
+        return;
+      }
     } else {
       // Validation simple pour les utilisateurs
       if (formData.firstName && formData.lastName && formData.phone) {
-        // Créer un événement personnalisé pour passer les données utilisateur
         const userLoginEvent = new CustomEvent('userLogin', {
           detail: {
             firstName: formData.firstName,
@@ -43,16 +65,28 @@ const LoginModal = ({ isOpen, onClose, onAdminLogin }: LoginModalProps) => {
           }
         });
         window.dispatchEvent(userLoginEvent);
+        onClose();
       }
     }
-    onClose();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+    
+    // Validation en temps réel pour admin
+    if (isAdmin) {
+      if (name === 'phone') {
+        const phoneError = validateAdminPhone(value) ? "" : getPhoneValidationMessage(value);
+        setValidationErrors(prev => ({ ...prev, phone: phoneError }));
+      } else if (name === 'password') {
+        const passwordError = validateAdminPassword(value) ? "" : getPasswordValidationMessage(value);
+        setValidationErrors(prev => ({ ...prev, password: passwordError }));
+      }
+    }
   };
 
   const handleCountryCodeChange = (value: string) => {
@@ -65,7 +99,17 @@ const LoginModal = ({ isOpen, onClose, onAdminLogin }: LoginModalProps) => {
   const handleModeSwitch = () => {
     setIsAdmin(!isAdmin);
     setFormData({ phone: "", password: "", firstName: "", lastName: "", countryCode: "+224" });
+    setValidationErrors({ phone: "", password: "" });
     setShowPassword(false);
+  };
+
+  const formatPhoneNumber = (value: string) => {
+    // Supprimer tous les caractères non numériques
+    const numbers = value.replace(/\D/g, '');
+    // Limiter à 10 chiffres
+    const limited = numbers.slice(0, 10);
+    // Formater avec des espaces
+    return limited.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4 $5').trim();
   };
 
   return (
@@ -186,10 +230,10 @@ const LoginModal = ({ isOpen, onClose, onAdminLogin }: LoginModalProps) => {
                 </>
               )}
 
-              {/* Numéro de téléphone pour les deux modes */}
+              {/* Numéro de téléphone */}
               <div className="space-y-2">
                 <Label htmlFor="phone" className="text-sm font-medium text-gray-200">
-                  Numéro de téléphone
+                  Numéro de téléphone {isAdmin && <span className="text-orange-400">(exactement 10 chiffres)</span>}
                 </Label>
                 <div className="flex gap-2">
                   {!isAdmin && (
@@ -212,25 +256,36 @@ const LoginModal = ({ isOpen, onClose, onAdminLogin }: LoginModalProps) => {
                       id="phone"
                       name="phone"
                       type="tel"
-                      placeholder={isAdmin ? "Numéro admin" : "12 34 56 78"}
-                      value={formData.phone}
+                      placeholder={isAdmin ? "12 34 56 78 90" : "12 34 56 78"}
+                      value={isAdmin ? formatPhoneNumber(formData.phone) : formData.phone}
                       onChange={handleInputChange}
                       className={`pl-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 transition-all duration-300 ${
                         isAdmin 
-                          ? 'border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20' 
+                          ? `border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20 ${validationErrors.phone ? 'border-red-500' : ''}` 
                           : 'border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20'
                       }`}
                       required
                     />
+                    {isAdmin && validationErrors.phone && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                      </div>
+                    )}
                   </div>
                 </div>
+                {isAdmin && validationErrors.phone && (
+                  <p className="text-red-400 text-xs flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {validationErrors.phone}
+                  </p>
+                )}
               </div>
 
               {/* Mot de passe seulement pour admin */}
               {isAdmin && (
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-sm font-medium text-gray-200">
-                    Mot de passe
+                    Mot de passe <span className="text-orange-400">(Majuscule + chiffres)</span>
                   </Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-orange-400" />
@@ -238,20 +293,33 @@ const LoginModal = ({ isOpen, onClose, onAdminLogin }: LoginModalProps) => {
                       id="password"
                       name="password"
                       type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
+                      placeholder="Exemple: Admin123"
                       value={formData.password}
                       onChange={handleInputChange}
-                      className="pl-10 pr-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20"
+                      className={`pl-10 pr-10 h-10 bg-slate-700/50 text-white placeholder-gray-400 border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20 ${
+                        validationErrors.password ? 'border-red-500' : ''
+                      }`}
                       required
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-400 hover:text-orange-300"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
+                      {validationErrors.password && (
+                        <AlertCircle className="h-4 w-4 text-red-500" />
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="text-orange-400 hover:text-orange-300"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
                   </div>
+                  {validationErrors.password && (
+                    <p className="text-red-400 text-xs flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {validationErrors.password}
+                    </p>
+                  )}
                 </div>
               )}
               
