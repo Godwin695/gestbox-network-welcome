@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -60,9 +59,9 @@ const Index = () => {
       <header className="bg-gradient-to-r from-slate-900 to-blue-900 shadow-xl border-b border-orange-500/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo avec fond blanc */}
+            {/* Logo avec fond gris sombre */}
             <div className="flex items-center animate-fade-in">
-              <div className="bg-white p-2 rounded-lg shadow-md">
+              <div className="bg-gray-200 p-1 rounded-md shadow-md">
                 <img 
                   src="/lovable-uploads/6d6959de-2520-47ed-9e21-f90d440b8bd1.png" 
                   alt="GestBox Logo" 
@@ -187,7 +186,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="mb-6 animate-fade-in">
-              <div className="bg-white p-4 rounded-lg shadow-md inline-block">
+              <div className="bg-gray-200 p-2 rounded-md shadow-md inline-block">
                 <img 
                   src="/lovable-uploads/6d6959de-2520-47ed-9e21-f90d440b8bd1.png" 
                   alt="GestBox Logo" 
